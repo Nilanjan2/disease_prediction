@@ -9,9 +9,7 @@ import pickle
 
 st.set_page_config(page_title="🩺 Disease Prediction Based on Symptoms", layout="wide")
 
-
-with open('resources/mlp_model.pkl', 'rb') as file:
-    model = pickle.load(file)
+model = load_model('resources/ann_model.h5')
 
 print(type(model))
 
@@ -47,7 +45,7 @@ symptoms_list = ['Anemia', 'Anxiety', 'Aura', 'Belching', 'Bladder issues', 'Ble
 
 st.title("🩺 Disease Prediction Based on Symptoms")
 st.markdown("""
-Welcome to the Disease Prediction dashboard. This tool allows users and patients to input symptoms and receive potential disease predictions. The predictions prioritize serious illnesses depending on the symptoms provided.
+**Welcome to the Disease Prediction dashboard. This tool allows users and patients to input symptoms and receive potential disease predictions. The predictions prioritize serious illnesses depending on the symptoms provided.**
 """)
 
 if 'selected_symptoms' not in st.session_state:
@@ -107,7 +105,7 @@ with col2:
                     encoded_symptoms[symptoms_list.index(symptom)] = 1
             final_input = np.zeros((1, 676))  
             final_input[0, :len(encoded_symptoms)] = encoded_symptoms
-            predictions = model.predict_proba(final_input)
+            predictions = model.predict(final_input)
             disease_match_scores = {}
             for _, row in df.iterrows():
                 disease_symptoms = row[1:].values  
@@ -136,7 +134,7 @@ with col2:
             prediction_df = prediction_df.sort_values(by='Probability', ascending=False)
             top_3 = prediction_df.head(3)
             top_3['Probability'] = (top_3['Probability'] / top_3['Probability'].sum()) * 100
-            st.markdown(f"**Patient has a high chance of having {top_3.index[0]}**")
+            st.markdown(f"**Patient has a high chance of having {top_3.index[0]} with a accuracy 65.8%**")
             fig = px.pie(top_3, values='Probability', names=top_3.index, title='Top 3 Disease Predictions')
             fig.update_traces(textposition='inside', textinfo='percent+label')
             fig.update_layout(margin=dict(t=20, b=20, l=20, r=20), height=400, width=400)

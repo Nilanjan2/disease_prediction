@@ -7,4 +7,5 @@ tensorflow
 tensorflow.keras
 plotly
 plotly.express
+imbalanced-learn
 streamlit
